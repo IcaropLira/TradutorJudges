@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Judge Translate</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1 id="title"></h1>
+  <button id="page" class="primary" type="button"></button>
+
+  <label>
+    <span id="lblTarget"></span>
+    <select id="target"></select>
+  </label>
+
+  <label>
+    <span id="lblService"></span>
+    <select id="service">
+      <option value="google">Google Translate</option>
+      <option value="deepl">DeepL (API key)</option>
+    </select>
+  </label>
+
+  <label id="keyRow" hidden>
+    <span id="lblKey"></span>
+    <input id="deeplKey" type="password" autocomplete="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-...:fx">
+  </label>
+
+  <p class="hint" id="hint"></p>
+
+  <script src="../shared/i18n.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
