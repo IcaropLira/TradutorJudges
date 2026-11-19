@@ -1,0 +1,21 @@
+{
+  "name": "hiraku-judges-translator",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Chrome/Firefox extension that translates competitive programming statements (HTML and PDF) without breaking formulas, code and samples.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "lint": "web-ext lint --source-dir dist/firefox --self-hosted",
+    "check": "npm test && npm run build && npm run lint",
+    "vendor": "node scripts/vendor-pdfjs.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.0",
+    "pdfjs-dist": "4.10.38",
+    "web-ext": "^10.8.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

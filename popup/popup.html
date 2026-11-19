@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Judge Translate</title>
+  <title>Hiraku Judges Translator</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h1 id="title"></h1>
+  <h1><img src="../icons/icon48.png" alt="" width="22" height="22"><span id="title"></span></h1>
   <button id="page" class="primary" type="button"></button>
 
   <label>
@@ -27,6 +27,19 @@
     <span id="lblKey"></span>
     <input id="deeplKey" type="password" autocomplete="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-...:fx">
   </label>
+
+  <label>
+    <span id="lblKeep"></span>
+    <textarea id="keep" rows="2" spellcheck="false"></textarea>
+    <small class="hint" id="keepHint"></small>
+  </label>
+
+  <label class="check">
+    <input id="hoverOriginal" type="checkbox">
+    <span id="lblHover"></span>
+  </label>
+
+  <button id="reader" class="secondary" type="button"></button>
 
   <p class="hint" id="hint"></p>
 

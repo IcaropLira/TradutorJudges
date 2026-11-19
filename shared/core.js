@@ -1,5 +1,5 @@
 /*
- * Judge Translate - core
+ * Hiraku Judges Translator - core
  *
  * Turns the already-rendered DOM of a problem statement into "units" (runs of inline
  * content). Everything that must never reach the translator (formulas, code, samples,
@@ -106,6 +106,33 @@
     return out;
   }
 
+  /** Build the "keep in English" matcher from a comma/newline separated list. */
+  function keepPattern(list) {
+    const words = String(list || '')
+      .split(/[,\n;]/)
+      .map((w) => w.trim())
+      .filter((w) => w && w.length <= 40)
+      .sort((a, b) => b.length - a.length)
+      .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    if (!words.length) return null;
+    return new RegExp('(?<![\\p{L}\\p{N}_])(?:' + words.join('|') + ')(?![\\p{L}\\p{N}_])', 'giu');
+  }
+
+  function splitKeep(s, re) {
+    if (!re) return [{ keep: false, s }];
+    const out = [];
+    let last = 0;
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(s))) {
+      if (m.index > last) out.push({ keep: false, s: s.slice(last, m.index) });
+      out.push({ keep: true, s: m[0] });
+      last = m.index + m[0].length;
+    }
+    if (last < s.length) out.push({ keep: false, s: s.slice(last) });
+    return out;
+  }
+
   function setChildren(el, kids) {
     while (el.firstChild) el.removeChild(el.firstChild);
     for (const k of kids) el.appendChild(k);
@@ -117,7 +144,8 @@
    * Encode a run of sibling nodes. Returns null when there is nothing to translate.
    * table: id -> {kind:'node', nodes[]} | {kind:'lit', value} | {kind:'el', el}
    */
-  function encodeRun(nodes) {
+  function encodeRun(nodes, opts) {
+    const keepRe = (opts && opts.keep) || null;
     const table = new Map();
     const parts = [];
     const inner = []; // [element, original child array] for every formatting element
@@ -139,7 +167,14 @@
               const id = nextId++;
               table.set(id, { kind: 'lit', value: seg.s });
               parts.push({ k: 'a', id });
-            } else pushText(seg.s);
+            } else {
+              for (const piece of splitKeep(seg.s, keepRe)) {
+                if (!piece.keep) { pushText(piece.s); continue; }
+                const id = nextId++;
+                table.set(id, { kind: 'lit', value: piece.s });
+                parts.push({ k: 'a', id });
+              }
+            }
           }
         } else if (n.nodeType === 1) {
           if (isAtom(n)) {
@@ -254,8 +289,8 @@
 
   // ------------------------------------------------------------------- units
 
-  function makeUnit(run) {
-    const enc = encodeRun(run);
+  function makeUnit(run, opts) {
+    const enc = encodeRun(run, opts);
     if (!enc) return null;
     const parent = run[0].parentNode;
     const anchor = run[0].ownerDocument.createComment('jt');
@@ -282,7 +317,7 @@
       let run = [];
       const flush = () => {
         if (run.length) {
-          const u = makeUnit(run);
+          const u = makeUnit(run, opts);
           if (u) units.push(u);
           run = [];
         }
@@ -376,6 +411,15 @@
     return { mode };
   }
 
+  /** Plain text of a unit as originally shown (for "show original on hover"). */
+  function originalText(unit) {
+    return unit.origLayout.top
+      .map((n) => n.textContent || '')
+      .join('')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function genericRoots(doc) {
     const cands = Array.from(doc.querySelectorAll('main,[role="main"],article'));
     const tops = cands.filter((c) => !cands.some((o) => o !== c && o.contains(c)));
@@ -386,6 +430,8 @@
   return {
     collectUnits,
     translateUnit,
+    keepPattern,
+    originalText,
     showOriginal,
     showTranslated,
     genericRoots,
