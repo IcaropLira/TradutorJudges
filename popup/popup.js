@@ -10,6 +10,10 @@
   $('lblService').textContent = J.t('service');
   $('lblKey').textContent = J.t('deeplKey');
   $('hint').textContent = J.t('popupHint');
+  $('lblKeep').textContent = J.t('keep');
+  $('keepHint').textContent = J.t('keepHint');
+  $('lblHover').textContent = J.t('hoverOriginal');
+  $('reader').textContent = J.t('openReader');
 
   for (const [code, name] of J.LANGS) {
     const o = document.createElement('option');
@@ -23,11 +27,18 @@
   }
 
   (async () => {
-    const s = await api.storage.sync.get({ target: J.defaultTarget(navigator.language), service: 'google' });
+    const s = await api.storage.sync.get({
+      target: J.defaultTarget(navigator.language),
+      service: 'google',
+      keep: J.DEFAULT_KEEP,
+      hoverOriginal: true,
+    });
     const l = await api.storage.local.get({ deeplKey: '' });
     $('target').value = s.target;
     $('service').value = s.service;
     $('deeplKey').value = l.deeplKey;
+    $('keep').value = s.keep;
+    $('hoverOriginal').checked = s.hoverOriginal;
     syncKeyRow();
   })();
 
@@ -38,6 +49,13 @@
   });
   // The key stays in local storage on purpose: it is never synced to other devices.
   $('deeplKey').addEventListener('change', () => api.storage.local.set({ deeplKey: $('deeplKey').value.trim() }));
+
+  $('keep').addEventListener('change', () => api.storage.sync.set({ keep: $('keep').value.trim() }));
+  $('hoverOriginal').addEventListener('change', () => api.storage.sync.set({ hoverOriginal: $('hoverOriginal').checked }));
+  $('reader').addEventListener('click', async () => {
+    await api.runtime.sendMessage({ type: 'open-reader' });
+    window.close();
+  });
 
   $('page').addEventListener('click', async () => {
     await api.runtime.sendMessage({ type: 'toggle-active-tab' });

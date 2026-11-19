@@ -4,7 +4,7 @@
   --fg: #1f2328;
   --muted: #656d76;
   --line: #d0d7de;
-  --accent: #1f6feb;
+  --accent: #c8186f;
   --field: #f6f8fa;
 }
 @media (prefers-color-scheme: dark) {
@@ -13,7 +13,7 @@
     --fg: #e6edf3;
     --muted: #8b949e;
     --line: #30363d;
-    --accent: #388bfd;
+    --accent: #d0217a;
     --field: #161b22;
   }
 }
@@ -26,10 +26,10 @@ body {
   color: var(--fg);
   font: 13px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
-h1 { margin: 0 0 12px; font-size: 15px; }
+h1 { margin: 0 0 12px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
 label { display: block; margin-top: 12px; }
 label > span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; }
-select, input {
+select, input, textarea {
   width: 100%;
   padding: 7px 8px;
   border: 1px solid var(--line);
@@ -38,7 +38,24 @@ select, input {
   color: var(--fg);
   font: inherit;
 }
-select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+textarea { resize: vertical; font-size: 12px; }
+label.check { display: flex; align-items: center; gap: 8px; }
+label.check input { width: auto; margin: 0; }
+label.check span { margin: 0; color: var(--fg); font-size: 13px; }
+small.hint { display: block; margin-top: 4px; font-size: 11px; }
+button.secondary {
+  width: 100%;
+  margin-top: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--field);
+  color: var(--fg);
+  font: 600 13px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  cursor: pointer;
+}
+button.secondary:hover { border-color: var(--accent); }
+textarea:focus-visible, select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 button.primary {
   width: 100%;
   padding: 9px 10px;
@@ -46,9 +63,10 @@ button.primary {
   border-radius: 6px;
   background: var(--accent);
   color: #fff;
-  font: 600 13px/1 inherit;
+  font: 600 13px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   cursor: pointer;
 }
 button.primary:hover { filter: brightness(1.08); }
 .hint { margin: 14px 0 0; color: var(--muted); font-size: 12px; }
 [hidden] { display: none !important; }
+input[type="checkbox"] { accent-color: var(--accent); }
