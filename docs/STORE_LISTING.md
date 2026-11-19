@@ -3,7 +3,7 @@
 Cole no campo **Descrição** da página de detalhes (Chrome Web Store) e no campo de descrição do addons.mozilla.org.
 Regra da Chrome Web Store: nada de listas de sites/marcas e nenhuma palavra repetida mais de 5 vezes (violação “Yellow Argon”). Cite poucos judges, dentro de frases, uma vez cada.
 
-**Resumo (o campo curto vem do manifesto):** Translate competitive programming statements, HTML or PDF, on Codeforces, AtCoder, UVa, vjudge and more. Formulas stay intact.
+**Resumo (vem do `description` do manifesto; só muda enviando um pacote novo):** Translate competitive programming problem statements, from web pages or PDF files, without breaking formulas, code or samples. Sem nomes de sites, para não cair na regra de keyword spam.
 
 ## Português (Brasil)
 ```
