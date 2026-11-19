@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Hiraku Judges Translator",
-  "version": "0.2.0",
-  "description": "Translate competitive programming statements, HTML or PDF, on Codeforces, AtCoder, UVa, vjudge and more. Formulas stay intact.",
+  "version": "0.2.1",
+  "description": "Translate competitive programming problem statements, from web pages or PDF files, without breaking formulas, code or samples.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
