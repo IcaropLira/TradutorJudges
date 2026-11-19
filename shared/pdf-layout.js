@@ -254,7 +254,13 @@
       if (best) { b.caption = best.c; best.c.captionOf = b; }
     }
 
-    const out = blocks.filter((b) => !b.captionOf);
+    // labels inside drawings (graph nodes, axis ticks): tiny letterless or near-empty text
+    const isLabel = (b) => {
+      if (b.kind === 'pre') return false;
+      const t = b.lines.map((l) => l.text).join(' ').replace(/\s+/g, '');
+      return t.length <= 4 && (!LETTER.test(t) || t.length <= 2) && !b.caption;
+    };
+    const out = blocks.filter((b) => !b.captionOf && !isLabel(b));
     const topOf = (b) => (b.caption ? b.caption.lines[0].base : b.lines[0].base);
     out.sort((a, b) => {
       const d = topOf(b) - topOf(a);

@@ -171,6 +171,8 @@ body:not([data-state="empty"]) .drop { display: none; }
 }
 .copy:hover { opacity: 1; }
 .notice { color: var(--muted); font-style: italic; }
+.pdf-fig { margin: .9em 0; text-align: center; }
+.pdf-fig img { max-width: 100%; height: auto; background: #fff; border-radius: 6px; padding: 4px; box-sizing: content-box; }
 body[data-translated="1"] .blk[title] { text-decoration: none; }
 
 /* -------------------------------------------------------------- drop zone */
