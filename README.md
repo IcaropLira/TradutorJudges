@@ -48,6 +48,10 @@ O manifesto fica em `manifest.base.json`; o `build.mjs` gera o de cada navegador
 **Firefox (140+)**: `about:debugging#/runtime/this-firefox` → *Carregar extensão temporária* → escolha `dist/firefox/manifest.json` (fica até fechar o navegador). Para instalar de vez, o Firefox exige a extensão assinada: envie `dist/hiraku-judges-translator-<versão>-firefox.zip` no addons.mozilla.org (listada ou só para distribuição própria). O ID usado é `hiraku-judges-translator@icaroplira`; troque com `GECKO_ID=... npm run build`.
 No Firefox, a extensão declara envio de *conteúdo de sites* porque o texto do enunciado vai para o serviço de tradução (Google/DeepL) quando você pede a tradução.
 
+## Privacidade
+
+O desenvolvedor não coleta nada; o texto do enunciado só vai para o serviço de tradução escolhido, quando você pede. Veja [PRIVACY.pt-BR.md](PRIVACY.pt-BR.md) / [PRIVACY.md](PRIVACY.md). Respostas do formulário das lojas: [docs/STORE_LISTING.md](docs/STORE_LISTING.md).
+
 ## Estrutura
 
 | Arquivo | Papel |

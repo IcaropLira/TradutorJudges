@@ -79,3 +79,14 @@ test('Word/SPOJ-style PDF: italic variables, running header and page numbers dro
   assert.match(s[1], /You are given a string ⟦S⟧ of length ⟦n⟧\. Find the longest substring/);
   assert.equal(blocks.filter((b) => b.type === 'pre')[0].text, 'Input:\n3\nabcabc\n\nOutput:\n3');
 });
+
+test('labels inside a drawing do not become paragraphs', async () => {
+  const { blocks } = await analyzeFile('bridges.pdf');
+  const s = blocks.map(show);
+  assert.ok(!s.some((x) => /^[\d\s]{1,4}$/.test(x)), 'no stray node numbers: ' + JSON.stringify(s.slice(0, 8)));
+  assert.ok(s.includes('Figure 1: the fragile bridges are drawn thicker.'));
+  // the figure sits in the gap between these two paragraphs
+  const i = s.findIndex((x) => x.startsWith('The kingdom of Arcadia'));
+  assert.equal(s[i + 1], 'Figure 1: the fragile bridges are drawn thicker.');
+  assert.ok(blocks[i].bbox.y0 - blocks[i + 1].bbox.y1 > 50);
+});

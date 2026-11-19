@@ -356,6 +356,7 @@ async function loadDocument(bytes, meta) {
   const result = L.analyze(layoutPages);
   buildPdfPane();
   buildTextPane(result, layoutPages);
+  await addFigures(result).catch((e) => console.warn('Hiraku Judges Translator: figures', e));
   document.body.dataset.state = 'ready';
   showMessage('', false);
   setStatus('');
@@ -666,6 +667,83 @@ function buildTextPane(result, layoutPages) {
   }
 
   for (const s of sections) sectionObserver.observe(s.el);
+}
+
+// ------------------------------------------------------------------ figures
+
+/**
+ * Drawings and images have no text: they show up as tall gaps between two text blocks.
+ * Each gap with ink in it is cropped from the page and placed between the paragraphs,
+ * so the text-only view (and the version embedded in the judge's page) keeps the figures.
+ */
+async function addFigures(result) {
+  const body = result.bodySize || 10;
+  for (let pi = 0; pi < S.pages.length; pi++) {
+    const blocks = S.blocks.filter((b) => b.page === pi);
+    if (!blocks.length) continue;
+    const x0 = Math.min(...blocks.map((b) => b.bbox.x0));
+    const x1 = Math.max(...blocks.map((b) => b.bbox.x1));
+    for (let i = 0; i + 1 < blocks.length; i++) {
+      const a = blocks[i];
+      const b = blocks[i + 1];
+      if (a.bbox.y0 - b.bbox.y1 < 3 * body) continue;
+      const fig = await cropRegion(S.pages[pi], { x0, x1, y0: b.bbox.y1, y1: a.bbox.y0 });
+      if (!fig) continue;
+      const el = document.createElement('figure');
+      el.className = 'pdf-fig notranslate';
+      el.setAttribute('translate', 'no');
+      const img = document.createElement('img');
+      img.src = fig.url;
+      img.alt = '';
+      img.style.width = Math.round(fig.width * 1.25) + 'px';
+      el.appendChild(img);
+      a.el.after(el);
+    }
+  }
+}
+
+async function cropRegion(p, r) {
+  const scale = 2;
+  const vp = p.page.getViewport({ scale });
+  const [ax, ay, bx, by] = vp.convertToViewportRectangle([r.x0 - 6, r.y0, r.x1 + 6, r.y1]);
+  const left = Math.floor(Math.min(ax, bx));
+  const top = Math.floor(Math.min(ay, by));
+  const w = Math.ceil(Math.abs(bx - ax));
+  const h = Math.ceil(Math.abs(by - ay));
+  if (w < 30 || h < 30) return null;
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, w, h);
+  await p.page.render({ canvasContext: ctx, viewport: vp, transform: [1, 0, 0, 1, -left, -top] }).promise;
+  // keep only the inked part
+  const px = ctx.getImageData(0, 0, w, h).data;
+  let minX = w, minY = h, maxX = -1, maxY = -1, ink = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const k = (y * w + x) * 4;
+      if (px[k] + px[k + 1] + px[k + 2] < 690) {
+        ink++;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (ink < w * h * 0.002 || maxX - minX < 16 || maxY - minY < 16) return null;
+  const pad = 10;
+  const cx = Math.max(0, minX - pad);
+  const cy = Math.max(0, minY - pad);
+  const cw = Math.min(w, maxX + pad) - cx;
+  const ch = Math.min(h, maxY + pad) - cy;
+  const out = document.createElement('canvas');
+  out.width = cw;
+  out.height = ch;
+  out.getContext('2d').drawImage(c, cx, cy, cw, ch, 0, 0, cw, ch);
+  return { url: out.toDataURL('image/png'), width: cw / scale };
 }
 
 // --------------------------------------------------------------- translation

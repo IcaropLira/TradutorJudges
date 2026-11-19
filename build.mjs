@@ -17,6 +17,15 @@ if (pkg.version !== base.version) {
   process.exit(1);
 }
 
+// Limites das lojas (a Chrome Web Store recusa o upload se passar).
+const LIMITS = { name: 75, short_name: 12, description: 132 };
+for (const [k, max] of Object.entries(LIMITS)) {
+  if (base[k] && base[k].length > max) {
+    console.error(`✖ manifest "${k}" tem ${base[k].length} caracteres (máximo ${max})`);
+    process.exit(1);
+  }
+}
+
 // ID da extensão no Firefox. Troque por algo seu e único ou defina GECKO_ID ao gerar o build.
 const GECKO_ID = process.env.GECKO_ID || 'hiraku-judges-translator@icaroplira';
 
