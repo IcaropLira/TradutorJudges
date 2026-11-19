@@ -1,0 +1,33 @@
+# Chrome Web Store — aba Privacidade
+
+Textos prontos para colar (em inglês, que é o que a equipe de revisão lê).
+
+**Single purpose**
+> Translate competitive programming problem statements on online judges (web pages and PDF files) into the user's language on request, keeping math formulas, code and sample tests unchanged.
+
+**Permission justifications**
+
+| Permissão | Justificativa |
+|---|---|
+| `storage` | Saves the user's settings (target language, translation service, words to keep in English, show-original-on-hover, optional DeepL API key), a local cache of translations, and the PDF reader's layout and zoom. storage.session briefly holds a PDF file while it is handed from the judge's page to the extension's PDF reader. |
+| `activeTab` | When the user presses the extension's shortcut (Alt+Shift+T) or the "Translate this page" button in the popup on a site that is not one of the supported judges, the translator is added to that tab only, after that explicit user action. |
+| `scripting` | Used with activeTab to inject the translator into the current tab on request (sites outside the supported list), and on judge pages that display a PDF statement in their own embedded viewer, to read which PDF that viewer loaded (the page's resource list) so the statement can be translated in place. No remote code is executed; only scripts bundled with the extension. |
+| `contextMenus` | Adds a "Translate this PDF" item to the right-click menu on PDF links and PDF pages, which opens the PDF in the extension's translating reader. |
+| Host permission | The supported judges (codeforces.com, atcoder.jp, cses.fi, open.kattis.com, spoj.com, acm.timus.ru, dmoj.ca, acmicpc.net, leetcode.com, vjudge.net, onlinejudge.org, icpcarchive.ecs.baylor.edu, qoj.ac): content scripts add the translate button, find PDF statements and add copy buttons to samples; the extension downloads PDF statements from these sites to translate them. translate.googleapis.com, api-free.deepl.com, api.deepl.com: the statement text is sent to the translation service the user selected, only when the user asks for a translation. Optional access to other sites is requested at runtime, per site, only when the user opens a PDF hosted elsewhere. |
+
+**Data usage** (marque só estas duas):
+- ☑ **Conteúdo do site**: o texto do enunciado vai para o serviço de tradução escolhido, só quando o usuário pede.
+- ☑ **Informações de autenticação**: a chave de API do DeepL (opcional) fica no aparelho e só é enviada ao DeepL para autenticar os pedidos do próprio usuário. (Marcar é a escolha conservadora; se preferir não marcar, seria preciso remover o suporte ao DeepL.)
+- ☐ todo o resto (identificação pessoal, saúde, financeiro, comunicações pessoais, local, histórico da Web, atividade do usuário).
+- Marque as três declarações (não vende dados; não usa para fins fora do propósito; não usa para crédito/empréstimo).
+
+**Privacy policy URL:** `https://github.com/IcaropLira/TradutorJudges/blob/main/PRIVACY.md`
+
+# Firefox (addons.mozilla.org)
+
+**Coleta de dados (declarada no manifesto):** `websiteContent` obrigatório: o texto do enunciado é transmitido ao serviço de tradução escolhido quando o usuário traduz. O Firefox mostra isso na instalação.
+
+**Política de privacidade:** cole o conteúdo de `PRIVACY.md` no campo de política, ou o link acima.
+
+**Notas para o revisor** (o pacote inclui o pdf.js minificado, que gera avisos de `Function`/`import` no validador):
+> The bundled vendor/pdfjs files are the unmodified pdf.js 4.10.38 release (pdfjs-dist on npm, Apache-2.0), used to read PDF statements locally. It is loaded with isEvalSupported: false. Source and build steps: https://github.com/IcaropLira/TradutorJudges (npm install && npm run vendor && npm run build).
